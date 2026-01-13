@@ -12,11 +12,13 @@ import { useToast } from "@/hooks/use-toast";
 interface MessageInputProps {
   conversationId: Id<"conversations">;
   currentUserId: Id<"users">;
+  recipientId?: Id<"users">; // Optional for 1-on-1 message restriction check
 }
 
 export function MessageInput({
   conversationId,
   currentUserId,
+  recipientId,
 }: MessageInputProps) {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +37,7 @@ export function MessageInput({
       await sendMessage({
         conversationId,
         senderId: currentUserId,
+        recipientId, // Pass recipient for friendship check
         content: content.trim(),
         type: "text",
       });
@@ -43,11 +46,13 @@ export function MessageInput({
         conversationId,
         userId: currentUserId,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to send message:", error);
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description:
+          error.message ||
+          "Failed to send message. Please try again.",
         variant: "destructive",
       });
     } finally {

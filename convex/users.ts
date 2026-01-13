@@ -32,6 +32,7 @@ export const upsertUser = mutation({
       imageUrl: args.imageUrl,
       isOnline: true,
       lastSeen: Date.now(),
+      friendRequestsEnabled: true, // Default to allowing messages from non-friends
     });
   },
 });
@@ -82,5 +83,23 @@ export const getUserById = query({
   },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.userId);
+  },
+});
+
+export const toggleFriendRequestsEnabled = mutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(args.userId, {
+      friendRequestsEnabled: !user.friendRequestsEnabled,
+    });
+
+    return !user.friendRequestsEnabled;
   },
 });

@@ -9,6 +9,7 @@ export default defineSchema({
         imageUrl: v.string(),
         isOnline: v.boolean(),
         lastSeen: v.number(),
+        friendRequestsEnabled: v.boolean(), // Allow messages from non-friends
     })
     .index("byClerkId", ["clerkId"])
     .index("byIsOnline", ["isOnline"]),
@@ -45,4 +46,15 @@ export default defineSchema({
     })
     .index("byConversation", ["conversationId"])
     .index("byConversationAndUser", ["conversationId", "userId"]),
+
+    friendRequests: defineTable({
+        senderId: v.id("users"),
+        recipientId: v.id("users"),
+        status: v.union(v.literal("pending"), v.literal("accepted"), v.literal("declined")),
+        createdAt: v.number(),
+        respondedAt: v.optional(v.number()),
+    })
+    .index("byRecipient", ["recipientId", "status"])
+    .index("bySender", ["senderId", "status"])
+    .index("byUsers", ["senderId", "recipientId"]),
 });

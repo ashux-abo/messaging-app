@@ -86,6 +86,9 @@ export default function ChatPage() {
       <MessageInput
         conversationId={conversationId as any}
         currentUserId={currentUser._id}
+        recipientId={
+          conversation.type === "direct" ? otherUserId : undefined
+        }
       />
     </div>
   );
