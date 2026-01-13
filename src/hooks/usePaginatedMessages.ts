@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useMutation } from "convex/react";
+import { useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
@@ -10,11 +10,11 @@ export function usePaginatedMessages(conversationId: Id<"conversations">) {
   const [allMessages, setAllMessages] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
-  const getMessagesPaginated = useMutation(api.messages.getMessagesPaginated);
+  const convex = useConvex();
 
   const loadMore = useCallback(async () => {
     try {
-      const result = await getMessagesPaginated({
+      const result = await convex.query(api.messages.getMessagesPaginated, {
         conversationId,
         limit: 20,
         cursor: cursor || undefined,
@@ -26,7 +26,7 @@ export function usePaginatedMessages(conversationId: Id<"conversations">) {
     } catch (error) {
       console.error("Failed to load messages:", error);
     }
-  }, [cursor, conversationId, getMessagesPaginated]);
+  }, [cursor, conversationId, convex]);
 
   return { allMessages, hasMore, loadMore, cursor };
 }
