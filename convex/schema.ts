@@ -35,9 +35,11 @@ export default defineSchema({
             })
         ),
         isEdited: v.boolean(),
+        repliedToMessageId: v.optional(v.id("messages")), // For message replies/threading
     })
     .index("byConversation", ["conversationId", "timestamp"])
-    .index("byTimestamp", ["timestamp"]),
+    .index("byTimestamp", ["timestamp"])
+    .index("byRepliedTo", ["repliedToMessageId"]),
 
     typingIndicators: defineTable({
         conversationId: v.id("conversations"),

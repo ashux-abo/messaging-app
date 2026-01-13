@@ -9,11 +9,16 @@ import { ChatHeader } from "@/components/chat/ChatHeader";
 import { MessageSkeleton } from "@/components/chat/MessageSkeleton";
 import { TypingIndicator } from "@/components/chat/TypingIndicator";
 import { useParams } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function ChatPage() {
   const { user } = useUser();
   const params = useParams();
   const conversationId = params.id as string;
+  const [replyingTo, setReplyingTo] = useState<Id<"messages"> | null>(null);
+  const messageRefs = useRef<{ [key: string]: HTMLDivElement }>({});
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // Get current user
   const currentUser = useQuery(
@@ -43,6 +48,22 @@ export default function ChatPage() {
     otherUserId ? { userId: otherUserId } : "skip"
   );
 
+  const handleReply = (messageId: Id<"messages">) => {
+    setReplyingTo(messageId);
+    
+    // Scroll to the message being replied to
+    setTimeout(() => {
+      const messageElement = messageRefs.current[messageId];
+      if (messageElement && messagesContainerRef.current) {
+        messageElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        messageElement.classList.add("animate-pulse");
+        setTimeout(() => {
+          messageElement.classList.remove("animate-pulse");
+        }, 2000);
+      }
+    }, 0);
+  };
+
   if (!currentUser || !conversation) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -59,15 +80,30 @@ export default function ChatPage() {
         currentUser={currentUser}
       />
 
-      <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-950 p-2 md:p-4 flex flex-col justify-between">
+      <div 
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto bg-white dark:bg-gray-950 p-2 md:p-4 flex flex-col justify-between"
+      >
         {messages && messages.length > 0 ? (
           <div className="space-y-3 md:space-y-4">
             {messages.map((message: any) => (
-              <ChatMessage
+              <div
                 key={message._id}
-                message={message}
-                currentUserId={currentUser._id}
-              />
+                ref={(el) => {
+                  if (el) messageRefs.current[message._id] = el;
+                }}
+                className={`transition-all duration-300 ${
+                  replyingTo === message._id
+                    ? "bg-yellow-100 dark:bg-yellow-900/30 rounded-lg px-2 py-1"
+                    : ""
+                }`}
+              >
+                <ChatMessage
+                  message={message}
+                  currentUserId={currentUser._id}
+                  onReply={handleReply}
+                />
+              </div>
             ))}
             <TypingIndicator
               conversationId={conversationId as any}
@@ -89,6 +125,8 @@ export default function ChatPage() {
         recipientId={
           conversation.type === "direct" ? otherUserId : undefined
         }
+        replyingTo={replyingTo}
+        onClearReply={() => setReplyingTo(null)}
       />
     </div>
   );

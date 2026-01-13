@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
@@ -8,26 +8,37 @@ import { Button } from "@/components/ui/button";
 import { Send, Paperclip } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useToast } from "@/hooks/use-toast";
+import { ReplyPreview } from "./ReplyPreview";
 
 interface MessageInputProps {
   conversationId: Id<"conversations">;
   currentUserId: Id<"users">;
   recipientId?: Id<"users">; // Optional for 1-on-1 message restriction check
+  replyingTo?: Id<"messages"> | null;
+  onClearReply?: () => void;
 }
 
 export function MessageInput({
   conversationId,
   currentUserId,
   recipientId,
+  replyingTo,
+  onClearReply,
 }: MessageInputProps) {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [replyingToLocal, setReplyingToLocal] = useState<Id<"messages"> | null>(replyingTo || null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const sendMessage = useMutation(api.messages.sendMessage);
   const setTyping = useMutation(api.typing.setTyping);
   const clearTyping = useMutation(api.typing.clearTyping);
   const { toast } = useToast();
+
+  // Sync external replyingTo with local state
+  useEffect(() => {
+    setReplyingToLocal(replyingTo || null);
+  }, [replyingTo]);
 
   const handleSend = async () => {
     if (!content.trim()) return;
@@ -40,8 +51,11 @@ export function MessageInput({
         recipientId, // Pass recipient for friendship check
         content: content.trim(),
         type: "text",
+        repliedToMessageId: replyingToLocal || undefined,
       });
       setContent("");
+      setReplyingToLocal(null);
+      onClearReply?.();
       await clearTyping({
         conversationId,
         userId: currentUserId,
@@ -91,33 +105,47 @@ export function MessageInput({
   };
 
   return (
-    <div className="p-2 md:p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-      <div className="flex gap-2 md:gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={isLoading}
-          className="shrink-0 h-8 w-8 md:h-10 md:w-10"
-        >
-          <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
-        </Button>
+    <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      {replyingToLocal && (
+        <div className="p-2 md:p-3 border-b border-gray-200 dark:border-gray-700">
+          <ReplyPreview 
+            repliedToMessageId={replyingToLocal}
+            onRemoveReply={() => {
+              setReplyingToLocal(null);
+              onClearReply?.();
+            }}
+          />
+        </div>
+      )}
+      
+      <div className="p-2 md:p-4">
+        <div className="flex gap-2 md:gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={isLoading}
+            className="shrink-0 h-8 w-8 md:h-10 md:w-10"
+          >
+            <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
+          </Button>
 
-        <Input
-          placeholder="Type a message..."
-          value={content}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          disabled={isLoading}
-          className="flex-1 bg-gray-100 dark:bg-gray-800 border-0 rounded-full text-sm md:text-base"
-        />
+          <Input
+            placeholder="Type a message..."
+            value={content}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            disabled={isLoading}
+            className="flex-1 bg-gray-100 dark:bg-gray-800 border-0 rounded-full text-sm md:text-base"
+          />
 
-        <Button
-          onClick={handleSend}
-          disabled={!content.trim() || isLoading}
-          className="shrink-0 h-8 w-8 md:h-10 md:w-10 bg-blue-600 hover:bg-blue-700"
-        >
-          <Send className="w-4 h-4 md:w-5 md:h-5" />
-        </Button>
+          <Button
+            onClick={handleSend}
+            disabled={!content.trim() || isLoading}
+            className="shrink-0 h-8 w-8 md:h-10 md:w-10 bg-blue-600 hover:bg-blue-700"
+          >
+            <Send className="w-4 h-4 md:w-5 md:h-5" />
+          </Button>
+        </div>
       </div>
     </div>
   );

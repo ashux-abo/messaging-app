@@ -8,6 +8,7 @@ export const sendMessage = mutation({
     recipientId: v.optional(v.id("users")), // For 1-on-1 messages to check friendship
     content: v.string(),
     type: v.union(v.literal("text"), v.literal("image"), v.literal("file")),
+    repliedToMessageId: v.optional(v.id("messages")), // For message replies
   },
   handler: async (ctx, args) => {
     // Check friendship restrictions for 1-on-1 messages
@@ -54,6 +55,7 @@ export const sendMessage = mutation({
       timestamp: Date.now(),
       reactions: [],
       isEdited: false,
+      repliedToMessageId: args.repliedToMessageId,
     });
 
     // Update conversation's lastMessageAt
@@ -179,6 +181,26 @@ export const watchMessages = query({
       .query("messages")
       .withIndex("byConversation", (q) => q.eq("conversationId", args.conversationId))
       .order("asc")
+      .collect();
+  },
+});
+export const getMessageById = query({
+  args: {
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.messageId);
+  },
+});
+
+export const getRepliesForMessage = query({
+  args: {
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("messages")
+      .withIndex("byRepliedTo", (q) => q.eq("repliedToMessageId", args.messageId))
       .collect();
   },
 });
