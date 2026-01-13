@@ -20,16 +20,16 @@ export function ChatMessage({ message, currentUserId }: ChatMessageProps) {
 
   return (
     <div
-      className={`flex gap-3 ${isCurrentUser ? "flex-row-reverse" : "flex-row"} mb-4`}
+      className={`flex gap-2 md:gap-3 ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
     >
       {!isCurrentUser && (
-        <Avatar className="h-8 w-8 shrink-0">
+        <Avatar className="h-6 w-6 md:h-8 md:w-8 shrink-0">
           <AvatarImage src={sender?.imageUrl} />
           <AvatarFallback>{sender?.name.charAt(0)}</AvatarFallback>
         </Avatar>
       )}
 
-      <div className={`max-w-xs ${isCurrentUser ? "items-end" : "items-start"} flex flex-col`}>
+      <div className={`max-w-xs md:max-w-md lg:max-w-lg ${isCurrentUser ? "items-end" : "items-start"} flex flex-col`}>
         {!isCurrentUser && (
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
             {sender?.name}
@@ -37,18 +37,18 @@ export function ChatMessage({ message, currentUserId }: ChatMessageProps) {
         )}
 
         <div
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-3 md:px-4 py-2 rounded-lg text-sm md:text-base ${
             isCurrentUser
               ? "bg-blue-600 text-white rounded-br-none"
               : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
           }`}
         >
-          {message.type === "text" && <p className="text-sm">{message.content}</p>}
+          {message.type === "text" && <p className="break-word">{message.content}</p>}
           {message.type === "image" && (
             <img
               src={message.content}
               alt="Shared image"
-              className="max-w-sm rounded"
+              className="max-w-xs md:max-w-sm rounded"
             />
           )}
           {message.isEdited && (

@@ -52,16 +52,16 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-screen">
+    <div className="flex-1 flex flex-col h-screen w-full">
       <ChatHeader
         conversation={conversation}
         otherUser={otherUser || undefined}
         currentUser={currentUser}
       />
 
-      <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-950 p-4 flex flex-col justify-between">
+      <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-950 p-2 md:p-4 flex flex-col justify-between">
         {messages && messages.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {messages.map((message: any) => (
               <ChatMessage
                 key={message._id}
@@ -76,7 +76,7 @@ export default function ChatPage() {
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">
               No messages yet. Start the conversation!
             </p>
           </div>

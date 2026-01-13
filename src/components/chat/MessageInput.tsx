@@ -91,15 +91,15 @@ export function MessageInput({
   };
 
   return (
-    <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-      <div className="flex gap-3">
+    <div className="p-2 md:p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      <div className="flex gap-2 md:gap-3">
         <Button
           variant="ghost"
           size="icon"
           disabled={isLoading}
-          className="shrink-0"
+          className="shrink-0 h-8 w-8 md:h-10 md:w-10"
         >
-          <Paperclip className="w-5 h-5" />
+          <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
         </Button>
 
         <Input
@@ -108,15 +108,15 @@ export function MessageInput({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          className="flex-1 bg-gray-100 dark:bg-gray-800 border-0 rounded-full"
+          className="flex-1 bg-gray-100 dark:bg-gray-800 border-0 rounded-full text-sm md:text-base"
         />
 
         <Button
           onClick={handleSend}
           disabled={!content.trim() || isLoading}
-          className="shrink-0 bg-blue-600 hover:bg-blue-700"
+          className="shrink-0 h-8 w-8 md:h-10 md:w-10 bg-blue-600 hover:bg-blue-700"
         >
-          <Send className="w-5 h-5" />
+          <Send className="w-4 h-4 md:w-5 md:h-5" />
         </Button>
       </div>
     </div>
