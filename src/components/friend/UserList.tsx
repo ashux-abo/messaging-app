@@ -62,12 +62,12 @@ export function UserList({ userId }: UserWithFriendStatusProps) {
     <div className="space-y-4">
       {/* Friends List */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Friends ({userFriends.length})</CardTitle>
+        <CardHeader className="pb-3 p-3 md:p-6">
+          <CardTitle className="text-base md:text-lg">Friends ({userFriends.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
           {userFriends.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
               No friends yet. Send a friend request to get started!
             </p>
           ) : (
@@ -75,14 +75,14 @@ export function UserList({ userId }: UserWithFriendStatusProps) {
               {userFriends.map((friend: any) => (
                 <div
                   key={friend._id}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex items-center gap-2 md:gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  <Avatar className="w-8 h-8">
+                  <Avatar className="w-7 h-7 md:w-8 md:h-8 shrink-0">
                     <AvatarImage src={friend.imageUrl} />
                     <AvatarFallback>{friend.name.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{friend.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-xs md:text-sm truncate">{friend.name}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       {friend.isOnline ? "Online" : "Offline"}
                     </p>
@@ -98,29 +98,29 @@ export function UserList({ userId }: UserWithFriendStatusProps) {
       {sentRequests && sentRequests.length > 0 && (
         <Card>
           <CardHeader
-            className="pb-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+            className="pb-3 p-3 md:p-6 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
             onClick={() => setExpandedRequests(!expandedRequests)}
           >
-            <CardTitle className="text-lg flex items-center justify-between">
+            <CardTitle className="text-base md:text-lg flex items-center justify-between">
               Pending Requests ({sentRequests.length})
-              <Clock className="w-4 h-4" />
+              <Clock className="w-4 h-4 md:w-5 md:h-5" />
             </CardTitle>
           </CardHeader>
           {expandedRequests && (
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 p-3 md:p-6 pt-0 md:pt-0">
               {sentRequests.map((request) => (
                 <div
                   key={request._id}
-                  className="flex items-center gap-3 p-2 rounded-lg bg-gray-50 dark:bg-gray-900"
+                  className="flex items-center gap-2 md:gap-3 p-2 rounded-lg bg-gray-50 dark:bg-gray-900"
                 >
-                  <Avatar className="w-8 h-8">
+                  <Avatar className="w-7 h-7 md:w-8 md:h-8 shrink-0">
                     <AvatarImage src={request.recipient?.imageUrl} />
                     <AvatarFallback>
                       {request.recipient?.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{request.recipient?.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-xs md:text-sm truncate">{request.recipient?.name}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       Pending...
                     </p>
@@ -135,24 +135,24 @@ export function UserList({ userId }: UserWithFriendStatusProps) {
       {/* Available Users */}
       {availableUsers.length > 0 && (
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Add Friends</CardTitle>
+          <CardHeader className="pb-3 p-3 md:p-6">
+            <CardTitle className="text-base md:text-lg">Add Friends</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {availableUsers.map((user) => (
                 <div
                   key={user._id}
-                  className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 gap-2"
                 >
-                  <div className="flex items-center gap-3 flex-1">
-                    <Avatar className="w-8 h-8">
+                  <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                    <Avatar className="w-7 h-7 md:w-8 md:h-8 shrink-0">
                       <AvatarImage src={user.imageUrl} />
                       <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{user.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-xs md:text-sm truncate">{user.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                         {user.email}
                       </p>
                     </div>
@@ -164,15 +164,16 @@ export function UserList({ userId }: UserWithFriendStatusProps) {
                     onClick={() =>
                       handleSendFriendRequest(user._id as Id<"users">)
                     }
+                    className="h-7 px-2 text-xs shrink-0"
                   >
                     {sentRequestIds.has(user._id as any) ? (
                       <>
-                        <Clock className="w-4 h-4 mr-1" />
+                        <Clock className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                         Pending
                       </>
                     ) : (
                       <>
-                        <UserPlus className="w-4 h-4 mr-1" />
+                        <UserPlus className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                         Add
                       </>
                     )}
