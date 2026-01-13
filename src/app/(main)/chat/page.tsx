@@ -1,3 +1,5 @@
+"use client";
+
 import dynamic from 'next/dynamic';
 
 const ChatListPageClient = dynamic(() => Promise.resolve(ChatListPageComponent), {
