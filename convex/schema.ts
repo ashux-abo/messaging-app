@@ -57,4 +57,20 @@ export default defineSchema({
     .index("byRecipient", ["recipientId", "status"])
     .index("bySender", ["senderId", "status"])
     .index("byUsers", ["senderId", "recipientId"]),
+
+    notifications: defineTable({
+        userId: v.id("users"), // Recipient of notification
+        type: v.union(
+            v.literal("message"),
+            v.literal("friend_request"),
+            v.literal("group_invite")
+        ),
+        senderId: v.id("users"), // User who triggered the notification
+        conversationId: v.optional(v.id("conversations")), // For message and group invite notifications
+        friendRequestId: v.optional(v.id("friendRequests")), // For friend request notifications
+        isRead: v.boolean(),
+        createdAt: v.number(),
+    })
+    .index("byUser", ["userId", "isRead"])
+    .index("byUserAndTime", ["userId", "createdAt"]),
 });
