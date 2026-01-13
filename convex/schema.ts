@@ -9,7 +9,7 @@ export default defineSchema({
         imageUrl: v.string(),
         isOnline: v.boolean(),
         lastSeen: v.number(),
-        friendRequestsEnabled: v.boolean(), // Allow messages from non-friends
+        friendRequestsEnabled: v.optional(v.boolean()), // Optional for backward compatibility, default true
     })
     .index("byClerkId", ["clerkId"])
     .index("byIsOnline", ["isOnline"]),

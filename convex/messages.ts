@@ -16,7 +16,8 @@ export const sendMessage = mutation({
       if (!recipient) throw new Error("Recipient not found");
 
       // If recipient has friend requests disabled, check if they're friends
-      if (!recipient.friendRequestsEnabled) {
+      const friendRequestsEnabled = recipient.friendRequestsEnabled ?? true; // Default to true
+      if (!friendRequestsEnabled) {
         // Check if sender and recipient are friends
         const friendRequest = await ctx.db
           .query("friendRequests")

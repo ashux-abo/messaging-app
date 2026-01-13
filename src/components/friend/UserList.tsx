@@ -72,7 +72,7 @@ export function UserList({ userId }: UserWithFriendStatusProps) {
             </p>
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {userFriends.map((friend) => (
+              {userFriends.map((friend: any) => (
                 <div
                   key={friend._id}
                   className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"

@@ -96,10 +96,11 @@ export const toggleFriendRequestsEnabled = mutation({
       throw new Error("User not found");
     }
 
+    const currentState = user.friendRequestsEnabled ?? true; // Default to true if undefined
     await ctx.db.patch(args.userId, {
-      friendRequestsEnabled: !user.friendRequestsEnabled,
+      friendRequestsEnabled: !currentState,
     });
 
-    return !user.friendRequestsEnabled;
+    return !currentState;
   },
 });

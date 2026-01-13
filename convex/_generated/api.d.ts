@@ -9,6 +9,7 @@
  */
 
 import type * as conversations from "../conversations.js";
+import type * as friendRequests from "../friendRequests.js";
 import type * as messages from "../messages.js";
 import type * as search from "../search.js";
 import type * as typing from "../typing.js";
@@ -22,6 +23,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   conversations: typeof conversations;
+  friendRequests: typeof friendRequests;
   messages: typeof messages;
   search: typeof search;
   typing: typeof typing;
