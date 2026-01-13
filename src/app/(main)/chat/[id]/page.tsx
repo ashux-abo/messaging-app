@@ -12,6 +12,7 @@ import { useParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 
+export const dynamic = 'force-dynamic';
 export default function ChatPage() {
   const { user } = useUser();
   const params = useParams();
