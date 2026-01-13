@@ -5,10 +5,46 @@ export const sendMessage = mutation({
   args: {
     conversationId: v.id("conversations"),
     senderId: v.id("users"),
+    recipientId: v.optional(v.id("users")), // For 1-on-1 messages to check friendship
     content: v.string(),
     type: v.union(v.literal("text"), v.literal("image"), v.literal("file")),
   },
   handler: async (ctx, args) => {
+    // Check friendship restrictions for 1-on-1 messages
+    if (args.recipientId) {
+      const recipient = await ctx.db.get(args.recipientId);
+      if (!recipient) throw new Error("Recipient not found");
+
+      // If recipient has friend requests disabled, check if they're friends
+      if (!recipient.friendRequestsEnabled) {
+        // Check if sender and recipient are friends
+        const friendRequest = await ctx.db
+          .query("friendRequests")
+          .filter((q) =>
+            q.and(
+              q.or(
+                q.and(
+                  q.eq(q.field("senderId"), args.senderId),
+                  q.eq(q.field("recipientId"), args.recipientId)
+                ),
+                q.and(
+                  q.eq(q.field("senderId"), args.recipientId),
+                  q.eq(q.field("recipientId"), args.senderId)
+                )
+              ),
+              q.eq(q.field("status"), "accepted")
+            )
+          )
+          .first();
+
+        if (!friendRequest) {
+          throw new Error(
+            "This user only accepts messages from friends. Send a friend request first."
+          );
+        }
+      }
+    }
+
     const messageId = await ctx.db.insert("messages", {
       conversationId: args.conversationId,
       senderId: args.senderId,
