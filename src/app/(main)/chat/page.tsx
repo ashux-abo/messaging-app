@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = 'force-dynamic';
 export default function ChatListPage() {
   return (
     <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-3 md:p-6">
