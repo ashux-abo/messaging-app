@@ -61,6 +61,23 @@ export const sendMessage = mutation({
       lastMessageAt: Date.now(),
     });
 
+    // Create notifications for other participants
+    const conversation = await ctx.db.get(args.conversationId);
+    if (conversation) {
+      for (const participantId of conversation.participants) {
+        if (participantId !== args.senderId) {
+          await ctx.db.insert("notifications", {
+            userId: participantId,
+            type: "message",
+            senderId: args.senderId,
+            conversationId: args.conversationId,
+            isRead: false,
+            createdAt: Date.now(),
+          });
+        }
+      }
+    }
+
     return messageId;
   },
 });

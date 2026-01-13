@@ -35,12 +35,24 @@ export const sendFriendRequest = mutation({
       throw new Error("Already friends");
     }
 
-    return await ctx.db.insert("friendRequests", {
+    const friendRequestId = await ctx.db.insert("friendRequests", {
       senderId: args.senderId,
       recipientId: args.recipientId,
       status: "pending",
       createdAt: Date.now(),
     });
+
+    // Create notification for friend request
+    await ctx.db.insert("notifications", {
+      userId: args.recipientId,
+      type: "friend_request",
+      senderId: args.senderId,
+      friendRequestId,
+      isRead: false,
+      createdAt: Date.now(),
+    });
+
+    return friendRequestId;
   },
 });
 
