@@ -1,6 +1,15 @@
-"use client";
-export const dynamic = 'force-dynamic';
-export default function ChatListPage() {
+import dynamic from 'next/dynamic';
+
+const ChatListPageClient = dynamic(() => Promise.resolve(ChatListPageComponent), {
+  ssr: false,
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+    </div>
+  ),
+});
+
+function ChatListPageComponent() {
   return (
     <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-3 md:p-6">
       <div className="text-center max-w-md">
@@ -21,4 +30,8 @@ export default function ChatListPage() {
       </div>
     </div>
   );
+}
+
+export default function ChatListPage() {
+  return <ChatListPageClient />;
 }
