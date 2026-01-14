@@ -8,6 +8,7 @@ export const sendMessage = mutation({
     recipientId: v.optional(v.id("users")), // For 1-on-1 messages to check friendship
     content: v.string(),
     type: v.union(v.literal("text"), v.literal("image"), v.literal("file")),
+    storageId: v.optional(v.id("_storage")), // Store storageId
     repliedToMessageId: v.optional(v.id("messages")), // For message replies
   },
   handler: async (ctx, args) => {
@@ -52,6 +53,7 @@ export const sendMessage = mutation({
       senderId: args.senderId,
       content: args.content,
       type: args.type,
+      storageId: args.storageId, // Store storageId
       timestamp: Date.now(),
       reactions: [],
       isEdited: false,
@@ -184,6 +186,7 @@ export const watchMessages = query({
       .collect();
   },
 });
+
 export const getMessageById = query({
   args: {
     messageId: v.id("messages"),

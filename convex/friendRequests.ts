@@ -75,6 +75,16 @@ export const acceptFriendRequest = mutation({
       respondedAt: Date.now(),
     });
 
+    // Create notification for the original sender that their request was accepted
+    await ctx.db.insert("notifications", {
+      userId: request.senderId,
+      type: "friend_request_accepted",
+      senderId: request.recipientId,
+      friendRequestId: args.requestId,
+      isRead: false,
+      createdAt: Date.now(),
+    });
+
     return args.requestId;
   },
 });
@@ -223,5 +233,43 @@ export const areFriends = query({
       .first();
 
     return reverseRequest?.status === "accepted";
+  },
+});
+
+export const getFriendRequestStatus = query({
+  args: {
+    userId: v.id("users"),
+    targetUserId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    // Check if sent a request
+    const sentRequest = await ctx.db
+      .query("friendRequests")
+      .withIndex("byUsers", (q) =>
+        q
+          .eq("senderId", args.userId)
+          .eq("recipientId", args.targetUserId)
+      )
+      .first();
+
+    if (sentRequest) {
+      return { status: sentRequest.status, direction: "sent" as const, requestId: sentRequest._id };
+    }
+
+    // Check if received a request
+    const receivedRequest = await ctx.db
+      .query("friendRequests")
+      .withIndex("byUsers", (q) =>
+        q
+          .eq("senderId", args.targetUserId)
+          .eq("recipientId", args.userId)
+      )
+      .first();
+
+    if (receivedRequest) {
+      return { status: receivedRequest.status, direction: "received" as const, requestId: receivedRequest._id };
+    }
+
+    return { status: "none" as const, direction: null, requestId: null };
   },
 });

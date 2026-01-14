@@ -27,6 +27,7 @@ export default defineSchema({
         senderId: v.id("users"),
         content: v.string(),
         type: v.union(v.literal("text"), v.literal("image"), v.literal("file")),
+        storageId: v.optional(v.id("_storage")), // Use this instead of fileUrl
         timestamp: v.number(),
         reactions: v.array(
             v.object({
@@ -65,6 +66,7 @@ export default defineSchema({
         type: v.union(
             v.literal("message"),
             v.literal("friend_request"),
+            v.literal("friend_request_accepted"), // Add this line
             v.literal("group_invite")
         ),
         senderId: v.id("users"), // User who triggered the notification

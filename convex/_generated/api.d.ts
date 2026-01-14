@@ -9,6 +9,7 @@
  */
 
 import type * as conversations from "../conversations.js";
+import type * as files from "../files.js";
 import type * as friendRequests from "../friendRequests.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
@@ -24,6 +25,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   conversations: typeof conversations;
+  files: typeof files;
   friendRequests: typeof friendRequests;
   messages: typeof messages;
   notifications: typeof notifications;
