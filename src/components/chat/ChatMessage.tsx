@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, FileIcon, Download } from "lucide-react";
 
 interface ChatMessageProps {
   message: Doc<"messages">;
@@ -29,8 +29,59 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
     originalMessage?.senderId ? { userId: originalMessage.senderId } : "skip"
   );
 
+  const fileUrl = useQuery(
+    api.files.getFileUrl,
+    message.storageId ? { storageId: message.storageId } : "skip"
+  );
+
   const isCurrentUser = message.senderId === currentUserId;
   const [showReplyButton, setShowReplyButton] = useState(false);
+
+  const renderMessageContent = () => {
+    switch (message.type) {
+      case "image":
+        return (
+          <div className="space-y-2">
+            {message.content && !message.content.includes('/uploads/') && (
+              <p className="break-words">{message.content}</p>
+            )}
+            {fileUrl && (
+              <img
+                src={fileUrl}
+                alt="Shared image"
+                className="max-w-xs md:max-w-sm rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => window.open(fileUrl, "_blank")}
+              />
+            )}
+          </div>
+        );
+
+      case "file":
+        return (
+          <div className="flex items-center gap-3 p-3 bg-white/10 rounded-lg min-w-[200px]">
+            <FileIcon className="w-8 h-8 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{message.content}</p>
+              {fileUrl && (
+                
+                  <a href={fileUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs hover:underline flex items-center gap-1 mt-1 opacity-80"
+                >
+                  <Download className="w-3 h-3" />
+                  Download
+                </a>
+              )}
+            </div>
+          </div>
+        );
+
+      default:
+        return <p className="break-words">{message.content}</p>;
+    }
+  };
 
   return (
     <div
@@ -60,7 +111,11 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
               : "bg-gray-300 dark:bg-gray-600 border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300"
           }`}>
             <p className="font-medium">{originalSender.name}</p>
-            <p className="truncate opacity-90">{originalMessage.content}</p>
+            <p className="truncate opacity-90">
+              {originalMessage.type === "image" && "📷 Image"}
+              {originalMessage.type === "file" && "📎 File"}
+              {originalMessage.type === "text" && originalMessage.content}
+            </p>
           </div>
         )}
 
@@ -71,14 +126,8 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
               : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
           }`}
         >
-          {message.type === "text" && <p className="break-word">{message.content}</p>}
-          {message.type === "image" && (
-            <img
-              src={message.content}
-              alt="Shared image"
-              className="max-w-xs md:max-w-sm rounded"
-            />
-          )}
+          {renderMessageContent()}
+          
           {message.isEdited && (
             <p className="text-xs opacity-70 mt-1">(edited)</p>
           )}
