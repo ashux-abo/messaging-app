@@ -1,0 +1,19 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_CONVEX_URL": "@convex-deploy",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@clerk-publishable-key",
+    "NEXT_PUBLIC_CLERK_SIGN_IN_URL": "@clerk-sign-in-url",
+    "NEXT_PUBLIC_CLERK_SIGN_UP_URL": "@clerk-sign-up-url",
+    "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL": "@clerk-after-sign-in-url",
+    "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL": "@clerk-after-sign-up-url"
+  },
+  "functions": {
+    "convex": {
+      "source": "convex"
+    }
+  }
+}

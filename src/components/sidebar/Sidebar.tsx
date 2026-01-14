@@ -13,7 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { AvailableUsers } from "@/components/sidebar/AvailableUsers";
-import { Plus, MessageSquare } from "lucide-react";
+import { Plus, MessageSquare, Users } from "lucide-react";
+import { CreateGroupDialog } from "./CreateGroupDialog";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -25,6 +27,8 @@ export function Sidebar({ onClose }: SidebarProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllUsers, setShowAllUsers] = useState(false);
+  const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<Id<"users">[]>([]);
 
   // Get current user's Convex ID
   const currentUser = useQuery(
@@ -55,6 +59,29 @@ export function Sidebar({ onClose }: SidebarProps) {
     } catch (error) {
       console.error("Failed to create conversation:", error);
     }
+  };
+
+  const handleUserRightClick = (userId: Id<"users">, userName: string) => {
+    if (!currentUser) return;
+    
+    // Toggle user selection
+    setSelectedUsers(prev => {
+      if (prev.includes(userId)) {
+        return prev.filter(id => id !== userId);
+      } else {
+        return [...prev, userId];
+      }
+    });
+  };
+
+  const handleCreateGroup = () => {
+    if (selectedUsers.length >= 2) {
+      setShowCreateGroup(true);
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedUsers([]);
   };
 
   const filteredConversations =
@@ -120,9 +147,35 @@ export function Sidebar({ onClose }: SidebarProps) {
 
           {showAllUsers && (
             <>
-              <p className="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400">
-                ALL USERS
-              </p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400">
+                  ALL USERS
+                </p>
+                {selectedUsers.length > 0 && (
+                  <div className="flex items-center gap-2 px-2">
+                    <span className="text-xs text-blue-600 dark:text-blue-400">
+                      {selectedUsers.length} selected
+                    </span>
+                    <Button
+                      size="sm"
+                      onClick={handleCreateGroup}
+                      disabled={selectedUsers.length < 2}
+                      className="text-xs"
+                    >
+                      <Users className="w-3 h-3 mr-1" />
+                      Create Group
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={clearSelection}
+                      className="text-xs"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                )}
+              </div>
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((u: any) => (
                   <button
@@ -131,12 +184,23 @@ export function Sidebar({ onClose }: SidebarProps) {
                       handleStartChat(u._id as string);
                       onClose?.();
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-xs md:text-sm text-gray-900 dark:text-white mb-1"
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      handleUserRightClick(u._id as Id<"users">, u.name);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-xs md:text-sm text-gray-900 dark:text-white mb-1 relative ${
+                      selectedUsers.includes(u._id) 
+                        ? 'bg-blue-100 dark:bg-blue-900 border border-blue-300 dark:border-blue-600' 
+                        : ''
+                    }`}
                   >
                     <div className="font-medium truncate">{u.name}</div>
                     <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
                       {u.email}
                     </div>
+                    {selectedUsers.includes(u._id) && (
+                      <div className="absolute top-2 right-2 w-2 h-2 bg-blue-600 rounded-full"></div>
+                    )}
                   </button>
                 ))
               ) : (
@@ -227,6 +291,19 @@ export function Sidebar({ onClose }: SidebarProps) {
             </div>
           </Link>
         </div>
+      )}
+
+      {/* Create Group Dialog */}
+      {currentUser && (
+        <CreateGroupDialog
+          isOpen={showCreateGroup}
+          onClose={() => {
+            setShowCreateGroup(false);
+            clearSelection();
+          }}
+          currentUserId={currentUser._id}
+          selectedUsers={selectedUsers}
+        />
       )}
     </div>
   );

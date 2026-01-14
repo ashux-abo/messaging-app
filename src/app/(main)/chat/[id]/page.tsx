@@ -40,7 +40,7 @@ export default function ChatPage() {
   );
 
   // Get other user info for direct messages
-  const otherUserId = conversation?.participants.find(
+  const otherUserId = conversation?.participants?.find(
     (id: any) => id !== currentUser?._id
   );
 
@@ -101,14 +101,14 @@ export default function ChatPage() {
               >
                 <ChatMessage
                   message={message}
-                  currentUserId={currentUser._id}
+                  currentUserId={currentUser?._id}
                   onReply={handleReply}
                 />
               </div>
             ))}
             <TypingIndicator
               conversationId={conversationId as any}
-              userId={currentUser._id}
+              userId={currentUser?._id}
             />
           </div>
         ) : (
@@ -122,7 +122,7 @@ export default function ChatPage() {
 
       <MessageInput
         conversationId={conversationId as any}
-        currentUserId={currentUser._id}
+        currentUserId={currentUser?._id}
         recipientId={
           conversation.type === "direct" ? otherUserId : undefined
         }
