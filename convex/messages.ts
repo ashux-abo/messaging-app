@@ -7,7 +7,7 @@ export const sendMessage = mutation({
     senderId: v.id("users"),
     recipientId: v.optional(v.id("users")), // For 1-on-1 messages to check friendship
     content: v.string(),
-    type: v.union(v.literal("text"), v.literal("image"), v.literal("file")),
+    type: v.union(v.literal("text"), v.literal("image"), v.literal("file"), v.literal("voice")),
     storageId: v.optional(v.id("_storage")), // Store storageId
     repliedToMessageId: v.optional(v.id("messages")), // For message replies
   },

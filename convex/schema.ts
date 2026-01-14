@@ -26,8 +26,9 @@ export default defineSchema({
         conversationId: v.id("conversations"),
         senderId: v.id("users"),
         content: v.string(),
-        type: v.union(v.literal("text"), v.literal("image"), v.literal("file")),
+        type: v.union(v.literal("text"), v.literal("image"), v.literal("file"), v.literal("voice")),
         storageId: v.optional(v.id("_storage")), // Use this instead of fileUrl
+        fileUrl: v.optional(v.string()), // Keep for backward compatibility during migration
         timestamp: v.number(),
         reactions: v.array(
             v.object({

@@ -10,6 +10,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useToast } from "@/hooks/use-toast";
 import { ReplyPreview } from "./ReplyPreview";
 import { useFileUpload } from "@/hooks/useFileUpload";
+import { VoiceRecorder } from "./VoiceRecorder";
 
 interface MessageInputProps {
   conversationId: Id<"conversations">;
@@ -68,68 +69,113 @@ export function MessageInput({
     }
   };
 
- const handleSend = async () => {
-  if (!content.trim() && !selectedFile) return;
+  const handleSend = async () => {
+    if (!content.trim() && !selectedFile) return;
 
-  setIsLoading(true);
-  try {
-    let storageId: Id<"_storage"> | undefined;
-    let messageType: "text" | "image" | "file" = "text";
+    setIsLoading(true);
+    try {
+      let storageId: Id<"_storage"> | undefined;
+      let messageType: "text" | "image" | "file" | "voice" = "text";
 
-    // Upload file if present
-    if (selectedFile) {
-      const uploadResult = await upload(selectedFile);
+      // Upload file if present
+      if (selectedFile) {
+        const uploadResult = await upload(selectedFile);
+        if (!uploadResult) {
+          throw new Error("File upload failed");
+        }
+        
+        storageId = uploadResult.storageId;
+        
+        // Determine message type
+        if (selectedFile.type.startsWith('image/')) {
+          messageType = "image";
+        } else {
+          messageType = "file";
+        }
+      }
+
+      // Send message with storageId instead of fileUrl
+      await sendMessage({
+        conversationId,
+        senderId: currentUserId,
+        recipientId,
+        content: content.trim() || selectedFile?.name || '',
+        type: messageType,
+        storageId, // Use storageId
+        repliedToMessageId: replyingToLocal || undefined,
+      });
+
+      // Reset form
+      setContent("");
+      setSelectedFile(null);
+      setFilePreview(null);
+      setReplyingToLocal(null);
+      onClearReply?.();
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+      await clearTyping({
+        conversationId,
+        userId: currentUserId,
+      });
+    } catch (error: any) {
+      console.error("Failed to send message:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVoiceSend = async (audioBlob: Blob) => {
+    setIsLoading(true);
+    try {
+      // Convert Blob to File for upload
+      const audioFile = new File([audioBlob], `voice-${Date.now()}.webm`, {
+        type: 'audio/webm',
+      });
+      
+      // Upload voice file
+      const uploadResult = await upload(audioFile);
       if (!uploadResult) {
-        throw new Error("File upload failed");
+        throw new Error("Voice upload failed");
       }
-      
-      storageId = uploadResult.storageId;
-      
-      // Determine message type
-      if (selectedFile.type.startsWith('image/')) {
-        messageType = "image";
-      } else {
-        messageType = "file";
-      }
+
+      // Send voice message
+      await sendMessage({
+        conversationId,
+        senderId: currentUserId,
+        recipientId,
+        content: "Voice Message",
+        type: "voice",
+        storageId: uploadResult.storageId,
+        repliedToMessageId: replyingToLocal || undefined,
+      });
+
+      // Reset reply state
+      setReplyingToLocal(null);
+      onClearReply?.();
+
+      await clearTyping({
+        conversationId,
+        userId: currentUserId,
+      });
+    } catch (error: any) {
+      console.error("Failed to send voice message:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send voice message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    // Send message with storageId instead of fileUrl
-    await sendMessage({
-      conversationId,
-      senderId: currentUserId,
-      recipientId,
-      content: content.trim() || selectedFile?.name || '',
-      type: messageType,
-      storageId, // Use storageId
-      repliedToMessageId: replyingToLocal || undefined,
-    });
-
-    // Reset form
-    setContent("");
-    setSelectedFile(null);
-    setFilePreview(null);
-    setReplyingToLocal(null);
-    onClearReply?.();
-    
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-
-    await clearTyping({
-      conversationId,
-      userId: currentUserId,
-    });
-  } catch (error: any) {
-    console.error("Failed to send message:", error);
-    toast({
-      title: "Error",
-      description: error.message || "Failed to send message. Please try again.",
-      variant: "destructive",
-    });
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
@@ -251,6 +297,11 @@ export function MessageInput({
             onKeyDown={handleKeyDown}
             disabled={isDisabled}
             className="flex-1 bg-gray-100 dark:bg-gray-800 border-0 rounded-full text-sm md:text-base"
+          />
+
+          <VoiceRecorder
+            onSend={handleVoiceSend}
+            isDisabled={isDisabled}
           />
 
           <Button
