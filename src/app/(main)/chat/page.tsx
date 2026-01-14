@@ -1,17 +1,9 @@
 "use client";
 
-import dynamic from 'next/dynamic';
+import React from 'react';
 
-const ChatListPageClient = dynamic(() => Promise.resolve(ChatListPageComponent), {
-  ssr: false,
-  loading: () => (
-    <div className="flex-1 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-    </div>
-  ),
-});
-
-function ChatListPageComponent() {
+// Define the UI component directly
+export default function ChatListPage() {
   return (
     <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-3 md:p-6">
       <div className="text-center max-w-md">
@@ -32,8 +24,4 @@ function ChatListPageComponent() {
       </div>
     </div>
   );
-}
-
-export default function ChatListPage() {
-  return <ChatListPageClient />;
 }
