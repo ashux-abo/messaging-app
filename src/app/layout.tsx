@@ -26,6 +26,8 @@ export const metadata: Metadata = {
   description: 'Real-time messaging with Clerk and Convex',
 }
 
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({
   children,
 }: Readonly<{

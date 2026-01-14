@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { FriendRequests } from "@/components/friend/FriendRequests";
 import { UserList } from "@/components/friend/UserList";
 
+export const dynamic = 'force-dynamic';
+
 export default function ProfilePage() {
   const { user } = useUser();
   const { signOut } = useClerk();

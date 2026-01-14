@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 export default function MainPage() {
   return (
     <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
