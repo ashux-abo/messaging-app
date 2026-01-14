@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 // Define the UI component directly
 export default function ChatListPage() {
   return (
