@@ -10,10 +10,5 @@
     "NEXT_PUBLIC_CLERK_SIGN_UP_URL": "@clerk-sign-up-url",
     "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL": "@clerk-after-sign-in-url",
     "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL": "@clerk-after-sign-up-url"
-  },
-  "functions": {
-    "convex": {
-      "source": "convex"
-    }
   }
 }
