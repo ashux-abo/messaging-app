@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   serverExternalPackages: ['convex'],
   outputFileTracingIncludes: {
-    '/': ['./proxy.ts'],
+    '/': ['./src/proxy.ts'],
   },
 };
 
