@@ -50,7 +50,7 @@ export function SelectGroupMembersDialog({
             <Button
               onClick={onCreateClick}
               disabled={selectedUsers.length < 2}
-              className="bg-orange-600 hover:bg-orange-700 text-sm"
+              className="bg-emerald-600 hover:bg-emerald-700 text-sm"
             >
               Create
             </Button>
