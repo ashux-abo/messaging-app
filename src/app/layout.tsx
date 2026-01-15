@@ -17,8 +17,30 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Messaging App',
+  title: 'Koneksyon',
   description: 'Real-time messaging with Clerk and Convex',
+  icons:{
+    icon: [
+      {
+        rel: 'icon',
+        type: 'image/svg',
+        sizes: '32x32',
+        url: '/koneksyon.svg',
+      },
+      {
+        rel: 'icon',
+        type: 'image/svg',
+        sizes: '16x16',
+        url: '/koneksyon.svg',
+      }
+    ],
+    apple: [
+      {
+        rel: 'apple-touch-icon',
+        url: '/koneksyon.svg',
+      }
+    ]
+  }
 }
 
 export const dynamic = 'force-dynamic';
