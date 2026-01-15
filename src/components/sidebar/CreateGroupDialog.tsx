@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X, Users } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface CreateGroupDialogProps {
   isOpen: boolean;
@@ -18,7 +19,13 @@ interface CreateGroupDialogProps {
 export function CreateGroupDialog({ isOpen, onClose, currentUserId, selectedUsers }: CreateGroupDialogProps) {
   const [groupName, setGroupName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const allUsers = useQuery(api.users.getAllUsers);
   const createGroupConversation = useMutation(api.conversations.createConversation);
+
+  // Get details of selected users
+  const selectedUserDetails = allUsers?.filter((user: any) => 
+    selectedUsers.includes(user._id as Id<"users">)
+  ) || [];
 
   const handleCreateGroup = async () => {
     if (!groupName.trim() || selectedUsers.length < 2) return;
@@ -28,7 +35,8 @@ export function CreateGroupDialog({ isOpen, onClose, currentUserId, selectedUser
       await createGroupConversation({
         type: "group",
         name: groupName.trim(),
-        participants: [currentUserId, ...selectedUsers],
+        participants: selectedUsers,
+        creatorId: currentUserId,
       });
       onClose();
       setGroupName("");
@@ -46,7 +54,7 @@ export function CreateGroupDialog({ isOpen, onClose, currentUserId, selectedUser
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <Users className="w-5 h-5" />
+            <Users className="w-5 h-5 text-orange-600" />
             Create Group Chat
           </h2>
           <button
@@ -73,20 +81,24 @@ export function CreateGroupDialog({ isOpen, onClose, currentUserId, selectedUser
 
           <div>
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Selected Users ({selectedUsers.length})
+              Members ({selectedUsers.length})
             </p>
-            <div className="max-h-32 overflow-y-auto bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-              {selectedUsers.length > 0 ? (
-                <div className="space-y-2">
-                  {selectedUsers.map((userId) => (
-                    <div
-                      key={userId}
-                      className="text-sm text-gray-700 dark:text-gray-300"
-                    >
-                      User {userId}
-                    </div>
-                  ))}
-                </div>
+            <div className="max-h-40 overflow-y-auto bg-gray-50 dark:bg-gray-700 rounded-lg p-3 space-y-2">
+              {selectedUserDetails.length > 0 ? (
+                selectedUserDetails.map((user: any) => (
+                  <div
+                    key={user._id}
+                    className="flex items-center gap-2 p-2 rounded bg-white dark:bg-gray-600"
+                  >
+                    <Avatar className="w-6 h-6 shrink-0">
+                      <AvatarImage src={user.imageUrl} />
+                      <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                      {user.name}
+                    </span>
+                  </div>
+                ))
               ) : (
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   No users selected. Select at least 2 users to create a group.
@@ -107,7 +119,7 @@ export function CreateGroupDialog({ isOpen, onClose, currentUserId, selectedUser
             <Button
               onClick={handleCreateGroup}
               disabled={!groupName.trim() || selectedUsers.length < 2 || isCreating}
-              className="flex-1"
+              className="flex-1 bg-orange-600 hover:bg-orange-700"
             >
               {isCreating ? "Creating..." : "Create Group"}
             </Button>
