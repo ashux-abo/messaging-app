@@ -43,6 +43,7 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
   const [showReplyButton, setShowReplyButton] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [showMessageActions, setShowMessageActions] = useState(false);
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const renderMessageContent = () => {
     switch (message.type) {
@@ -110,9 +111,19 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
 
   return (
     <div
-      className={`flex gap-2 md:gap-3 ${isCurrentUser ? "flex-row-reverse" : "flex-row"} group`}
-      onMouseEnter={() => setShowReplyButton(true)}
-      onMouseLeave={() => setShowReplyButton(false)}
+      className={`flex gap-2 md:gap-3 ${isCurrentUser ? "flex-row-reverse" : "flex-row"} group relative`}
+      onMouseEnter={() => {
+        setShowReplyButton(true);
+        if (hoverTimeout) clearTimeout(hoverTimeout);
+      }}
+      onMouseLeave={() => {
+        const timeout = setTimeout(() => {
+          setShowReplyButton(false);
+          setShowReactionPicker(false);
+          setShowMessageActions(false);
+        }, 150);
+        setHoverTimeout(timeout);
+      }}
     >
       {!isCurrentUser && (
         <Avatar className="h-6 w-6 md:h-8 md:w-8 shrink-0">
@@ -132,8 +143,8 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
         {originalMessage && originalSender && (
           <div className={`text-xs px-2 py-1 rounded border-l-2 ${
             isCurrentUser 
-              ? "bg-blue-500/20 border-blue-400 text-blue-100" 
-              : "bg-gray-200 dark:bg-gray-600 border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300"
+              ? "bg-orange-600/20 border-orange-500 text-orange-700 dark:text-orange-300" 
+              : "bg-orange-100 dark:bg-orange-900/30 border-orange-400 dark:border-orange-700 text-orange-900 dark:text-orange-100"
           }`}>
             <p className="font-medium">{originalSender.name}</p>
             <p className="truncate opacity-90">
@@ -145,42 +156,46 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
           </div>
         )}
 
-        <div
-          className={`px-3 md:px-4 py-2 rounded-lg text-sm md:text-base relative ${
-            isCurrentUser
-              ? "bg-blue-600 text-white rounded-br-none"
-              : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
-          }`}
-        >
-          {renderMessageContent()}
-          
-          {message.isEdited && (
-            <p className="text-xs opacity-70 mt-1">(edited)</p>
-          )}
+        <div className={`relative`}>
+          <div
+            className={`px-3 md:px-4 py-2 rounded-lg text-sm md:text-base ${
+              isCurrentUser
+                ? "bg-orange-600 text-white rounded-br-none hover:bg-orange-700 transition-colors"
+                : "bg-orange-100 dark:bg-orange-900/30 text-gray-900 dark:text-white rounded-bl-none"
+            }`}
+          >
+            {renderMessageContent()}
+            
+            {message.isEdited && (
+              <p className="text-xs opacity-70 mt-1">(edited)</p>
+            )}
+          </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Positioned outside message bubble */}
           {showReplyButton && (
-            <div className={`absolute top-1/2 -translate-y-1/2 flex gap-1 ${
-              isCurrentUser ? "-right-20" : "-left-20"
+            <div className={`absolute top-0 flex gap-1 translate-y-0 ${
+              isCurrentUser ? "right-full pr-2" : "left-full pl-2"
             }`}>
               <button
                 onClick={() => setShowReactionPicker(!showReactionPicker)}
-                className={`p-1 rounded-full transition ${
+                className={`p-2 rounded-full transition flex-shrink-0 ${
                   isCurrentUser
-                    ? "hover:bg-blue-700 text-white"
-                    : "hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400"
+                    ? "bg-orange-600 hover:bg-orange-700 text-white"
+                    : "bg-orange-400 dark:bg-orange-700 hover:bg-orange-500 dark:hover:bg-orange-600 text-white"
                 }`}
+                title="Add reaction"
               >
                 <Smile className="w-4 h-4" />
               </button>
               
               <button
                 onClick={() => setShowMessageActions(!showMessageActions)}
-                className={`p-1 rounded-full transition ${
+                className={`p-2 rounded-full transition flex-shrink-0 ${
                   isCurrentUser
-                    ? "hover:bg-blue-700 text-white"
-                    : "hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400"
+                    ? "bg-orange-600 hover:bg-orange-700 text-white"
+                    : "bg-orange-400 dark:bg-orange-700 hover:bg-orange-500 dark:hover:bg-orange-600 text-white"
                 }`}
+                title="More actions"
               >
                 <MoreHorizontal className="w-4 h-4" />
               </button>
@@ -188,11 +203,12 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
               {onReply && (
                 <button
                   onClick={() => onReply(message._id)}
-                  className={`p-1 rounded-full transition ${
+                  className={`p-2 rounded-full transition flex-shrink-0 ${
                     isCurrentUser
-                      ? "hover:bg-blue-700 text-white"
-                      : "hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400"
+                      ? "bg-orange-600 hover:bg-orange-700 text-white"
+                      : "bg-orange-400 dark:bg-orange-700 hover:bg-orange-500 dark:hover:bg-orange-600 text-white"
                   }`}
+                  title="Reply"
                 >
                   <MessageCircle className="w-4 h-4" />
                 </button>
@@ -232,7 +248,7 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
             {message.reactions.map((reaction: any, idx: number) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-xs"
+                className="inline-flex items-center gap-1 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded text-xs border border-orange-300 dark:border-orange-700"
               >
                 {reaction.emoji}
                 {reaction.emoji === "👍" &&
