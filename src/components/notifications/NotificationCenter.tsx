@@ -32,6 +32,12 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
   const acceptFriendRequest = useMutation(
     api.friendRequests.acceptFriendRequest
   );
+  const acceptGroupInvitation = useMutation(
+    api.conversations.acceptGroupInvitation
+  );
+  const declineGroupInvitation = useMutation(
+    api.conversations.declineGroupInvitation
+  );
 
   const unreadCount = useMemo(
     () => unreadNotifications?.length ?? 0,
@@ -67,6 +73,39 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
       toast.success("Friend request accepted!");
     } catch (error) {
       toast.error("Failed to accept friend request");
+    }
+  };
+
+  const handleAcceptGroupInvitation = async (
+    e: React.MouseEvent,
+    conversationId: Id<"conversations">
+  ) => {
+    e.stopPropagation();
+    try {
+      await acceptGroupInvitation({
+        conversationId,
+        userId,
+      });
+      toast.success("Joined the group!");
+      setIsOpen(false);
+    } catch (error) {
+      toast.error("Failed to accept group invitation");
+    }
+  };
+
+  const handleDeclineGroupInvitation = async (
+    e: React.MouseEvent,
+    conversationId: Id<"conversations">
+  ) => {
+    e.stopPropagation();
+    try {
+      await declineGroupInvitation({
+        conversationId,
+        userId,
+      });
+      toast.success("Group invitation declined");
+    } catch (error) {
+      toast.error("Failed to decline group invitation");
     }
   };
 
@@ -226,6 +265,38 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
                               </Button>
                             </div>
                           )}
+
+                        {/* Group Invite Action Buttons */}
+                        {notification.type === "group_invite" && (
+                          <div className="flex gap-2 mt-2">
+                            <Button
+                              size="sm"
+                              onClick={(e) =>
+                                handleAcceptGroupInvitation(
+                                  e,
+                                  notification.conversationId
+                                )
+                              }
+                              className="h-7 text-xs bg-green-600 hover:bg-green-700"
+                            >
+                              <Check className="w-3 h-3 mr-1" />
+                              Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) =>
+                                handleDeclineGroupInvitation(
+                                  e,
+                                  notification.conversationId
+                                )
+                              }
+                              className="h-7 text-xs"
+                            >
+                              Decline
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
