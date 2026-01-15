@@ -17,7 +17,9 @@ export default defineSchema({
     conversations: defineTable({
         type: v.union(v.literal("direct"), v.literal("group")),
         name: v.optional(v.string()), // Optional for direct messages
-        participants: v.array(v.id("users")), // Array of user IDs
+        participants: v.array(v.id("users")), // Array of user IDs who have accepted
+        invitedUsers: v.optional(v.array(v.id("users"))), // Array of user IDs invited but not accepted yet
+        creatorId: v.optional(v.id("users")), // Creator of the group chat
         lastMessageAt: v.number()
     })
     .index("byLastMessageAt", ["lastMessageAt"]),
