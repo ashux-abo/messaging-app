@@ -318,7 +318,7 @@ export function NotificationCenter({ userId }: NotificationCenterProps) {
                   router.push("/profile");
                   setIsOpen(false);
                 }}
-                className="text-xs text-blue-600 hover:text-blue-700"
+                className="text-xs text-green-600 hover:text-green-700"
               >
                 View all notifications
               </Button>

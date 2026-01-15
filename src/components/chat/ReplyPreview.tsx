@@ -25,9 +25,9 @@ export function ReplyPreview({ repliedToMessageId, onRemoveReply }: ReplyPreview
   }
 
   return (
-    <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 px-3 py-2 rounded flex items-start justify-between gap-2">
+    <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-green-500 px-3 py-2 rounded flex items-start justify-between gap-2">
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-blue-600 dark:text-blue-400">
+        <p className="text-xs font-medium text-green-600 dark:text-green-400">
           Replying to {sender.name}
         </p>
         <p className="text-xs text-gray-700 dark:text-gray-300 truncate">

@@ -75,7 +75,7 @@ export function FriendRequests({ userId }: FriendRequestsProps) {
                 size="sm"
                 variant="ghost"
                 onClick={() => handleDecline(request._id)}
-                className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                className="h-7 w-7 md:h-8 md:w-8 p-0 text-green-600 hover:text-green-700 hover:bg-red-50 dark:hover:bg-red-900/20"
               >
                 <X className="w-3 h-3 md:w-4 md:h-4" />
               </Button>

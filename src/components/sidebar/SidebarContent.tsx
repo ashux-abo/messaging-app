@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { AvailableUsers } from "@/components/sidebar/AvailableUsers";
-import { Plus, MessageSquare, Users } from "lucide-react";
+import { Plus, Users, Search } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 
 interface SidebarContentProps {
@@ -102,50 +103,77 @@ export function SidebarContent({ onClose, onShowSelectMembers, onCurrentUserIdCh
     ) || [];
 
   return (
-    <div className="w-64 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen bg-white dark:bg-gray-900">
+    <div className="w-64 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="p-3 md:p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-4 gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-blue-600 shrink-0" />
-            <h1 className="text-base md:text-lg font-bold text-gray-900 dark:text-white truncate">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Image 
+              src="/koneksyon.svg" 
+              alt="KONEKSYON" 
+              width={32} 
+              height={32}
+              className="w-8 h-8 border-2 rounded-1xl"
+            />
+            <h1 className="text-lg font-bold text-gray-900 dark:text-white">
               Messages
             </h1>
           </div>
-          <div className="flex items-center gap-1 md:gap-2 shrink-0">
+          <div className="flex items-center gap-2">
             {currentUser && <NotificationCenter userId={currentUser._id} />}
             <ThemeToggle />
           </div>
         </div>
 
-        {/* Search and New Chat */}
-        <Input
-          placeholder={showAllUsers ? "Search users..." : "Search conversations..."}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-gray-100 dark:bg-gray-800 border-0 rounded-lg mb-2 text-sm"
-        />
-        <Button 
-          onClick={() => setShowAllUsers(!showAllUsers)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-sm"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          {showAllUsers ? "Hide Users" : "New Chat"}
-        </Button>
+        {/* Search Input */}
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder={showAllUsers ? "Search users..." : "Search..."}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-sm h-10"
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          <Button 
+            onClick={() => setShowAllUsers(!showAllUsers)}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm h-10 rounded-lg shadow-sm"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            {showAllUsers ? "Hide Users" : "New Chat"}
+          </Button>
+
+          {/* Create Group Button */}
+          {currentUser && !showAllUsers && (
+            <Button
+              onClick={() => {
+                onShowSelectMembers?.();
+              }}
+              variant="outline"
+              className="w-full text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-950 text-sm h-10 rounded-lg"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Create Group
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Conversations */}
       <ScrollArea className="flex-1 overflow-visible">
-        <div className="p-2 overflow-visible">
+        <div className="p-3 overflow-visible">
           {/* Available Users Section */}
           {currentUser && <AvailableUsers currentUserId={currentUser._id} />}
           
-          {currentUser && <Separator className="my-2" />}
+          {currentUser && <Separator className="my-3 bg-gray-200 dark:bg-gray-800" />}
 
           {!showAllUsers && searchTerm && filteredUsers.length > 0 && (
             <>
-              <p className="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400">
-                USERS
+              <p className="px-2 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Users
               </p>
               {filteredUsers.map((u: any) => (
                 <button
@@ -154,41 +182,70 @@ export function SidebarContent({ onClose, onShowSelectMembers, onCurrentUserIdCh
                     handleStartChat(u._id as string);
                     onClose?.();
                   }}
-                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-xs md:text-sm text-gray-900 dark:text-white mb-1"
+                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-sm mb-1 transition-colors"
                 >
-                  <div className="font-medium truncate">{u.name}</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                    {u.email}
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={u.imageUrl}
+                      alt={u.name}
+                      className="w-9 h-9 rounded-full ring-2 ring-gray-100 dark:ring-gray-800"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-gray-900 dark:text-white truncate">
+                        {u.name}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {u.email}
+                      </div>
+                    </div>
                   </div>
                 </button>
               ))}
-              <Separator className="my-2" />
+              <Separator className="my-3 bg-gray-200 dark:bg-gray-800" />
             </>
           )}
 
           {!showAllUsers && filteredConversations.length > 0 ? (
             <>
-              <p className="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400">
-                CONVERSATIONS
+              <p className="px-2 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Messages
               </p>
               {filteredConversations.map((conv: any) => {
                 // For direct messages, find the other participant's name
-                const conversationName = conv.name || (conv.type === "direct" 
-                  ? allUsers?.find((u: any) => u._id !== currentUser?._id && conv.participants.includes(u._id))?.name 
-                  : "Group Chat");
+                const otherUser = conv.type === "direct" 
+                  ? allUsers?.find((u: any) => u._id !== currentUser?._id && conv.participants.includes(u._id))
+                  : null;
+                
+                const conversationName = conv.name || (otherUser?.name || "Group Chat");
+                const conversationImage = otherUser?.imageUrl;
                 
                 return (
                   <Link
                     key={conv._id}
                     href={`/chat/${conv._id}`}
                     onClick={() => onClose?.()}
-                    className="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 mb-1 group"
+                    className="block px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 mb-1 transition-colors group"
                   >
-                    <div className="font-medium text-gray-900 dark:text-white text-xs md:text-sm truncate">
-                      {conversationName}
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                      {conv.participants.length} {conv.type === "direct" ? "participant" : "participants"}
+                    <div className="flex items-center gap-3">
+                      {conversationImage ? (
+                        <img
+                          src={conversationImage}
+                          alt={conversationName}
+                          className="w-9 h-9 rounded-full ring-2 ring-gray-100 dark:ring-gray-800"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center ring-2 ring-gray-100 dark:ring-gray-800">
+                          <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                          {conversationName}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {conv.participants.length} {conv.type === "direct" ? "member" : "members"}
+                        </div>
+                      </div>
                     </div>
                   </Link>
                 );
@@ -196,49 +253,47 @@ export function SidebarContent({ onClose, onShowSelectMembers, onCurrentUserIdCh
             </>
           ) : (
             !showAllUsers && (
-              <div className="px-3 py-8 text-center text-gray-600 dark:text-gray-400">
-                <p className="text-xs md:text-sm">No conversations yet</p>
-                <p className="text-xs">Click "New Chat" to start messaging</p>
+              <div className="px-3 py-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Image 
+                    src="/koneksyon.svg" 
+                    alt="KONEKSYON" 
+                    width={32} 
+                    height={32}
+                    className="w-8 h-8 opacity-50"
+                  />
+                </div>
+                <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                  No conversations yet
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Click "New Chat" to start messaging
+                </p>
               </div>
             )
           )}
         </div>
       </ScrollArea>
 
-      {/* Create Group Button */}
-      {currentUser && !showAllUsers && (
-        <div className="p-3 md:p-4 border-t border-gray-200 dark:border-gray-700">
-          <Button
-            onClick={() => {
-              onShowSelectMembers?.();
-            }}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-sm"
-          >
-            <Users className="w-4 h-4 mr-2" />
-            Create a Group Chat
-          </Button>
-        </div>
-      )}
-
       {/* User Profile */}
       {currentUser && (
-        <div className="p-3 md:p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-3 border-t border-gray-200 dark:border-gray-800">
           <Link
             href="/profile"
             onClick={() => onClose?.()}
-            className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
             <img
               src={currentUser.imageUrl}
               alt={currentUser.name}
-              className="w-8 h-8 rounded-full shrink-0"
+              className="w-10 h-10 rounded-full ring-2 ring-emerald-100 dark:ring-emerald-900/30"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs md:text-sm font-medium text-gray-900 dark:text-white truncate">
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                 {currentUser.name}
               </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                {currentUser.email}
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                View profile
               </p>
             </div>
           </Link>

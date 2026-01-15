@@ -32,14 +32,14 @@ export function ReactionPicker({ messageId, currentUserId, isCurrentUser, onClos
   };
 
   return (
-    <div className={`absolute bottom-full mb-2 bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-700 rounded-lg shadow-lg p-2 flex gap-1 z-50 ${
+    <div className={`absolute bottom-full mb-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-700 rounded-lg shadow-lg p-2 flex gap-1 z-50 ${
       isCurrentUser ? "right-0" : "left-0"
     }`}>
       {COMMON_REACTIONS.map((emoji) => (
         <button
           key={emoji}
           onClick={() => handleReaction(emoji)}
-          className="w-8 h-8 flex items-center justify-center hover:bg-orange-200 dark:hover:bg-orange-800 rounded transition-colors text-lg"
+          className="w-8 h-8 flex items-center justify-center hover:bg-green-200 dark:hover:bg-green-800 rounded transition-colors text-lg"
           title={`React with ${emoji}`}
         >
           {emoji}

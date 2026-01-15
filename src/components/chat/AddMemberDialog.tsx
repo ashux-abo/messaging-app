@@ -78,7 +78,7 @@ export function AddMemberDialog({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-orange-600" />
+            <UserPlus className="w-5 h-5 text-green-600" />
             Add Members to Group
           </h2>
           <button

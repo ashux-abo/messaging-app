@@ -258,7 +258,7 @@ export function MessageInput({
             <div className="mt-2">
               <div className="w-full bg-gray-200 rounded-full h-1.5">
                 <div
-                  className="bg-blue-600 h-1.5 rounded-full transition-all"
+                  className="bg-green-600 h-1.5 rounded-full transition-all"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -307,7 +307,7 @@ export function MessageInput({
           <Button
             onClick={handleSend}
             disabled={(!content.trim() && !selectedFile) || isDisabled}
-            className="shrink-0 h-8 w-8 md:h-10 md:w-10 bg-blue-600 hover:bg-blue-700"
+            className="shrink-0 h-8 w-8 md:h-10 md:w-10 bg-green-500 hover:bg-green-700"
           >
             <Send className="w-4 h-4 md:w-5 md:h-5" />
           </Button>

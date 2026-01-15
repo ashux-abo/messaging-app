@@ -54,7 +54,7 @@ export function CreateGroupDialog({ isOpen, onClose, currentUserId, selectedUser
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <Users className="w-5 h-5 text-orange-600" />
+            <Users className="w-5 h-5 text-orange-400" />
             Create Group Chat
           </h2>
           <button
@@ -119,7 +119,7 @@ export function CreateGroupDialog({ isOpen, onClose, currentUserId, selectedUser
             <Button
               onClick={handleCreateGroup}
               disabled={!groupName.trim() || selectedUsers.length < 2 || isCreating}
-              className="flex-1 bg-orange-600 hover:bg-orange-700"
+              className="flex-1 bg-orange-300 hover:bg-orange-500"
             >
               {isCreating ? "Creating..." : "Create Group"}
             </Button>

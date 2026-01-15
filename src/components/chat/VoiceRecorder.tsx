@@ -102,7 +102,7 @@ export function VoiceRecorder({ onSend, isDisabled }: VoiceRecorderProps) {
         <button
           onClick={sendRecording}
           disabled={isDisabled}
-          className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50"
+          className="p-2 bg-green-600 text-white rounded-full hover:bg-green-700 disabled:opacity-50"
         >
           <Send className="w-4 h-4" />
         </button>

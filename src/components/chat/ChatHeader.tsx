@@ -25,7 +25,7 @@ export function ChatHeader({
 
   return (
     <>
-      <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2 md:p-4">
+      <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 md:p-4">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
             <Link href="/chat">
@@ -74,16 +74,13 @@ export function ChatHeader({
               variant="ghost"
               size="icon"
               onClick={() => setShowAddMember(true)}
-              className="h-8 w-8 md:h-10 md:w-10 shrink-0 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+              className="h-8 w-8 md:h-10 md:w-10 shrink-0 text-green-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
               title="Add member to group"
             >
               <UserPlus className="w-4 h-4 md:w-5 md:h-5" />
             </Button>
           )}
 
-          <Button variant="ghost" size="icon" className="h-8 w-8 md:h-10 md:w-10 shrink-0">
-            <MoreVertical className="w-4 h-4 md:w-5 md:h-5" />
-          </Button>
         </div>
       </div>
 
