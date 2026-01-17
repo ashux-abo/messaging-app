@@ -14,9 +14,10 @@ interface ChatMessageProps {
   message: Doc<"messages">;
   currentUserId: Id<"users">;
   onReply?: (messageId: Id<"messages">) => void;
+  onMessageEdit?: (messageId: Id<"messages">, newContent: string) => void;
 }
 
-export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProps) {
+export function ChatMessage({ message, currentUserId, onReply, onMessageEdit }: ChatMessageProps) {
   const sender = useQuery(api.users.getUserById, {
     userId: message.senderId,
   });
@@ -44,14 +45,15 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [showMessageActions, setShowMessageActions] = useState(false);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [messageContent, setMessageContent] = useState(message.content);
 
   const renderMessageContent = () => {
     switch (message.type) {
       case "image":
         return (
           <div className="space-y-2">
-            {message.content && !message.content.includes('/uploads/') && (
-              <p className="break-words">{message.content}</p>
+            {messageContent && !messageContent.includes('/uploads/') && (
+              <p className="break-words">{messageContent}</p>
             )}
             {displayUrl && (
               <img
@@ -71,7 +73,7 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
               <FileIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{message.content}</p>
+              <p className="text-sm font-medium truncate">{messageContent}</p>
               {displayUrl && (
                 <a
                   href={displayUrl}
@@ -107,7 +109,7 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
         );
 
       default:
-        return <p className="break-words">{message.content}</p>;
+        return <p className="break-words">{messageContent}</p>;
     }
   };
 
@@ -224,7 +226,14 @@ export function ChatMessage({ message, currentUserId, onReply }: ChatMessageProp
               messageId={message._id}
               currentUserId={currentUserId}
               messageSenderId={message.senderId}
+              messageContent={messageContent}
               onClose={() => setShowMessageActions(false)}
+              onEdit={(newContent) => {
+                setMessageContent(newContent);
+                if (onMessageEdit) {
+                  onMessageEdit(message._id, newContent);
+                }
+              }}
             />
           )}
         </div>

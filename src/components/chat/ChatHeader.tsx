@@ -3,10 +3,11 @@
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MoreVertical, UserPlus } from "lucide-react";
+import { ArrowLeft, MoreVertical, UserPlus, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { AddMemberDialog } from "./AddMemberDialog";
+import { EditGroupDialog } from "./EditGroupDialog";
 
 interface ChatHeaderProps {
   conversation: Doc<"conversations">;
@@ -20,8 +21,11 @@ export function ChatHeader({
   currentUser,
 }: ChatHeaderProps) {
   const [showAddMember, setShowAddMember] = useState(false);
+  const [showEditGroup, setShowEditGroup] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
   const title = conversation.type === "direct" ? otherUser?.name : conversation.name;
   const isOnline = otherUser?.isOnline;
+  const isGroupCreator = conversation.type === "group" && conversation.creatorId === currentUser._id;
 
   return (
     <>
@@ -70,15 +74,46 @@ export function ChatHeader({
           </div>
 
           {conversation.type === "group" && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowAddMember(true)}
-              className="h-8 w-8 md:h-10 md:w-10 shrink-0 text-green-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-              title="Add member to group"
-            >
-              <UserPlus className="w-4 h-4 md:w-5 md:h-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowAddMember(true)}
+                className="h-8 w-8 md:h-10 md:w-10 shrink-0 text-green-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                title="Add member to group"
+              >
+                <UserPlus className="w-4 h-4 md:w-5 md:h-5" />
+              </Button>
+
+              {isGroupCreator && (
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowOptions(!showOptions)}
+                    className="h-8 w-8 md:h-10 md:w-10 shrink-0 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                    title="More options"
+                  >
+                    <MoreVertical className="w-4 h-4 md:w-5 md:h-5" />
+                  </Button>
+
+                  {showOptions && (
+                    <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg py-1 z-50 min-w-[150px]">
+                      <button
+                        onClick={() => {
+                          setShowEditGroup(true);
+                          setShowOptions(false);
+                        }}
+                        className="w-full px-3 py-2 text-sm text-left hover:bg-orange-100 dark:hover:bg-orange-900/30 flex items-center gap-2 text-orange-600 dark:text-orange-400 transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit Group
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           )}
 
         </div>
@@ -91,6 +126,16 @@ export function ChatHeader({
           currentUserId={currentUser._id}
           conversationId={conversation._id}
           currentParticipants={conversation.participants}
+        />
+      )}
+
+      {showEditGroup && conversation.type === "group" && (
+        <EditGroupDialog
+          isOpen={showEditGroup}
+          onClose={() => setShowEditGroup(false)}
+          conversationId={conversation._id}
+          currentGroupName={conversation.name || ""}
+          currentUserId={currentUser._id}
         />
       )}
     </>

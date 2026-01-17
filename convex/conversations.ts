@@ -228,3 +228,28 @@ export const declineGroupInvitation = mutation({
     }
   },
 });
+
+export const updateConversationName = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    userId: v.id("users"),
+    newName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const conversation = await ctx.db.get(args.conversationId);
+    if (!conversation) throw new Error("Conversation not found");
+
+    // Only group creators can edit the name
+    if (conversation.type !== "group") {
+      throw new Error("Only group conversations can be edited");
+    }
+
+    if (conversation.creatorId !== args.userId) {
+      throw new Error("Only the group creator can edit the group name");
+    }
+
+    await ctx.db.patch(args.conversationId, {
+      name: args.newName,
+    });
+  },
+});
