@@ -131,6 +131,6 @@ export function AvailableUsers({ currentUserId }: AvailableUsersProps) {
           </div>
         ))}
       </div>
-    </div>
+    </div>      
   );
 }
