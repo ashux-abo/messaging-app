@@ -31,9 +31,10 @@ export function SidebarContent({ onClose, onShowSelectMembers, onCurrentUserIdCh
   const [showAllUsers, setShowAllUsers] = useState(false);
 
   // Get current user's Convex ID
+  const shouldFetchUser = isSignedIn && user;
   const currentUser = useQuery(
     api.users.getUserByClerkId,
-    isSignedIn && user ? { clerkId: user.id } : "skip"
+    shouldFetchUser ? { clerkId: user!.id } : "skip"
   );
 
   // Initialize user in Convex
