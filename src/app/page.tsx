@@ -101,7 +101,7 @@ export default function Home() {
                 href="/sign-up"
                 className="inline-block px-10 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-lg transition shadow-lg"
               >
-                Request a Demo
+                Join Now
               </Link>
             )}
           </div>
