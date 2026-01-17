@@ -10,9 +10,8 @@ A real-time messaging application built with **Next.js 16**, **Clerk** for authe
 - Persistent user sessions
 
 **Real-time Messaging**
-- Instant message delivery with Convex subscriptions
+- Instant message delivery 
 - Direct messages and group chats
-- Message history with pagination
 - Typing indicators and online status
 
 **Advanced Features**
@@ -21,7 +20,6 @@ A real-time messaging application built with **Next.js 16**, **Clerk** for authe
 - User search and conversation search
 - Dark/light mode toggle
 - Responsive mobile-first design
-- Error boundaries and skeleton loaders
 
 **Technical Stack**
 - **Frontend**: Next.js 16, React 19, Tailwind CSS
