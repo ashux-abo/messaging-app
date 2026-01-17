@@ -43,7 +43,7 @@ A real-time messaging application built with **Next.js 16**, **Clerk** for authe
 
 1. **Clone the repository**
 ```bash
-git clone [<repo-url>](https://github.com/ashux-abo/messaging-app.git)
+git clone [(https://github.com/ashux-abo/messaging-app.git)
 cd messaging-app
 ```
 
