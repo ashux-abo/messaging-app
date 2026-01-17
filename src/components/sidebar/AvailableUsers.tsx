@@ -112,7 +112,7 @@ export function AvailableUsers({ currentUserId }: AvailableUsersProps) {
                     size="sm"
                     variant="ghost"
                     onClick={() => handleSendFriendRequest(user._id as Id<"users">)}
-                    className="h-7 w-7 p-0 min-w-[28px] text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    className="h-7 w-7 p-0 min-w-[28px] text-emerald-600 hover:bg-green-50 dark:hover:bg-green-900/20"
                     title="Add friend"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
@@ -120,7 +120,7 @@ export function AvailableUsers({ currentUserId }: AvailableUsersProps) {
                   <Button
                     size="sm"
                     onClick={() => handleStartChat(user._id as Id<"users">)}
-                    className="h-7 w-7 p-0 min-w-[28px] bg-green-600 hover:bg-green-700"
+                    className="h-7 w-7 p-0 min-w-[28px] bg-emerald-600 hover:bg-emerald-700"
                     title="Chat"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
