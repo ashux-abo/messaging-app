@@ -23,20 +23,20 @@ export function AvailableUsers({ currentUserId }: AvailableUsersProps) {
   const sentRequests = useQuery(api.friendRequests.getSentFriendRequests, {
     userId: currentUserId,
   });
-  
+
   const sendFriendRequest = useMutation(api.friendRequests.sendFriendRequest);
   const createConversation = useMutation(
-    api.conversations.getOrCreateDirectConversation
+    api.conversations.getOrCreateDirectConversation,
   );
 
   const friendIds = useMemo(
     () => new Set(userFriends?.map((f) => f._id)),
-    [userFriends]
+    [userFriends],
   );
-  
+
   const sentRequestIds = useMemo(
     () => new Set(sentRequests?.map((r) => r.recipientId)),
-    [sentRequests]
+    [sentRequests],
   );
 
   // Filter out self and friends
@@ -44,9 +44,9 @@ export function AvailableUsers({ currentUserId }: AvailableUsersProps) {
     () =>
       allUsers?.filter(
         (user: any) =>
-          user._id !== currentUserId && !friendIds.has(user._id as any)
+          user._id !== currentUserId && !friendIds.has(user._id as any),
       ) || [],
-    [allUsers, currentUserId, friendIds]
+    [allUsers, currentUserId, friendIds],
   );
 
   const handleSendFriendRequest = async (recipientId: Id<"users">) => {
@@ -80,7 +80,7 @@ export function AvailableUsers({ currentUserId }: AvailableUsersProps) {
       <p className="px-2 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400">
         AVAILABLE USERS
       </p>
-      <div className="space-y-1 max-h-48 overflow-y-auto pr-2">
+      <div className="space-y-1 max-h-[120px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
         {availableUsers.map((user: any) => (
           <div
             key={user._id}
@@ -111,7 +111,9 @@ export function AvailableUsers({ currentUserId }: AvailableUsersProps) {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => handleSendFriendRequest(user._id as Id<"users">)}
+                    onClick={() =>
+                      handleSendFriendRequest(user._id as Id<"users">)
+                    }
                     className="h-7 w-7 p-0 min-w-[28px] text-emerald-600 hover:bg-emerald-50 dark:hover:bg-green-900/20"
                     title="Add friend"
                   >
