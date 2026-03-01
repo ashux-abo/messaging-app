@@ -110,7 +110,7 @@ convex/
 
 ### Authentication
 - Users sign up/sign in via Clerk
-- User data is stored in Convex on first login
+- User data is stored in Convex on first login and used for user context
 - Protected routes redirect to sign-in when unauthenticated
 
 ### Real-time Chat
