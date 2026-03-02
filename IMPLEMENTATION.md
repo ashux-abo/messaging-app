@@ -322,4 +322,4 @@ For issues:
 2. Check Convex docs: https://convex.dev/docs
 3. Check Next.js docs: https://nextjs.org/docs
 
-Happy messaging! 🎉
+
